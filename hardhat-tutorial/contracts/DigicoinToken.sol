@@ -3,10 +3,10 @@
 
   import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
   import "@openzeppelin/contracts/access/Ownable.sol";
-  import "./ICryptoDevs.sol";
+  import "./IDigicoin.sol";
 
-  contract CryptoDevToken is ERC20, Ownable {
-      // Price of one Crypto Dev token
+  contract DigicoinToken is ERC20, Ownable {
+      // Price of one Digicoin token
       uint256 public constant tokenPrice = 0.001 ether;
       // Each NFT would give the user 10 tokens
       // It needs to be represented as 10 * (10 ** 18) as ERC20 tokens are represented by the smallest denomination possible for the token
@@ -15,19 +15,19 @@
       // Owning 1 full token is equivalent to owning (10^18) tokens when you account for the decimal places.
       // More information on this can be found in the Freshman Track Cryptocurrency tutorial.
       uint256 public constant tokensPerNFT = 10 * 10**18;
-      // the max total supply is 10000 for Crypto Dev Tokens
+      // the max total supply is 10000 for Digicoin Tokens
       uint256 public constant maxTotalSupply = 10000 * 10**18;
-      // CryptoDevsNFT contract instance
-      ICryptoDevs CryptoDevsNFT;
+      // DigicoinNFT contract instance
+      IDigicoin DigicoinNFT;
       // Mapping to keep track of which tokenIds have been claimed
       mapping(uint256 => bool) public tokenIdsClaimed;
 
-      constructor(address _cryptoDevsContract) ERC20("Crypto Dev Token", "CD") {
-          CryptoDevsNFT = ICryptoDevs(_cryptoDevsContract);
+      constructor(address _DigicoinContract) ERC20("Digicoin Token", "CD") {
+          DigicoinNFT = IDigicoin(_digiCoinContract);
       }
 
       /**
-       * @dev Mints `amount` number of CryptoDevTokens
+       * @dev Mints `amount` number of DigicoinTokens
        * Requirements:
        * - `msg.value` should be equal or greater than the tokenPrice * amount
        */
@@ -48,20 +48,20 @@
       /**
        * @dev Mints tokens based on the number of NFT's held by the sender
        * Requirements:
-       * balance of Crypto Dev NFT's owned by the sender should be greater than 0
+       * balance of Digicoin NFT's owned by the sender should be greater than 0
        * Tokens should have not been claimed for all the NFTs owned by the sender
        */
       function claim() public {
           address sender = msg.sender;
-          // Get the number of CryptoDev NFT's held by a given sender address
-          uint256 balance = CryptoDevsNFT.balanceOf(sender);
+          // Get the number of Digicoin NFT's held by a given sender address
+          uint256 balance = DigicoinNFT.balanceOf(sender);
           // If the balance is zero, revert the transaction
-          require(balance > 0, "You dont own any Crypto Dev NFT's");
+          require(balance > 0, "You dont own any Digicoin NFT's");
           // amount keeps track of number of unclaimed tokenIds
           uint256 amount = 0;
           // loop over the balance and get the token ID owned by `sender` at a given `index` of its token list.
           for (uint256 i = 0; i < balance; i++) {
-              uint256 tokenId = CryptoDevsNFT.tokenOfOwnerByIndex(sender, i);
+              uint256 tokenId = DigicoinNFT.tokenOfOwnerByIndex(sender, i);
               // if the tokenId has not been claimed, increase the amount
               if (!tokenIdsClaimed[tokenId]) {
                   amount += 1;

@@ -7,7 +7,7 @@ import {
   NFT_CONTRACT_ADDRESS,
   TOKEN_CONTRACT_ABI,
   TOKEN_CONTRACT_ADDRESS,
-} from "../constants";
+} from "../constants/index.js";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
@@ -18,10 +18,10 @@ export default function Home() {
   // loading is set to true when we are waiting for a transaction to get mined
   const [loading, setLoading] = useState(false);
   // tokensToBeClaimed keeps track of the number of tokens that can be claimed
-  // based on the Crypto Dev NFT's held by the user for which they havent claimed the tokens
+  // based on the Digicoin NFT's held by the user for which they havent claimed the tokens
   const [tokensToBeClaimed, setTokensToBeClaimed] = useState(zero);
-  // balanceOfCryptoDevTokens keeps track of number of Crypto Dev tokens owned by an address
-  const [balanceOfCryptoDevTokens, setBalanceOfCryptoDevTokens] = useState(
+  // balanceOfDigicoinTokens keeps track of number of Digicoin tokens owned by an address
+  const [balanceOfDigicoinTokens, setBalanceOfDigicoinTokens] = useState(
     zero
   );
   // amount of the tokens that the user wants to mint
@@ -86,9 +86,9 @@ export default function Home() {
   };
 
   /**
-   * getBalanceOfCryptoDevTokens: checks the balance of Crypto Dev Tokens's held by an address
+   * getBalanceOfDigicoinTokens: checks the balance of Digicoin Tokens's held by an address
    */
-  const getBalanceOfCryptoDevTokens = async () => {
+  const getBalanceOfDigicoinTokens = async () => {
     try {
       // Get the provider from web3Modal, which in our case is MetaMask
       // No need for the Signer here, as we are only reading state from the blockchain
@@ -106,17 +106,17 @@ export default function Home() {
       // call the balanceOf from the token contract to get the number of tokens held by the user
       const balance = await tokenContract.balanceOf(address);
       // balance is already a big number, so we dont need to convert it before setting it
-      setBalanceOfCryptoDevTokens(balance);
+      setBalanceOfDigicoinTokens(balance);
     } catch (err) {
       console.error(err);
-      setBalanceOfCryptoDevTokens(zero);
+      setBalanceOfDigicoinTokens(zero);
     }
   };
 
   /**
-   * mintCryptoDevToken: mints `amount` number of tokens to a given address
+   * mintDigicoinToken: mints `amount` number of tokens to a given address
    */
-  const mintCryptoDevToken = async (amount) => {
+  const mintDigicoinToken = async (amount) => {
     try {
       // We need a Signer here since this is a 'write' transaction.
       // Create an instance of tokenContract
@@ -130,7 +130,7 @@ export default function Home() {
       // Each token is of `0.001 ether`. The value we need to send is `0.001 * amount`
       const value = 0.001 * amount;
       const tx = await tokenContract.mint(amount, {
-        // value signifies the cost of one crypto dev token which is "0.001" eth.
+        // value signifies the cost of one digicoin token which is "0.001" eth.
         // We are parsing `0.001` string to ether using the utils library from ethers.js
         value: utils.parseEther(value.toString()),
       });
@@ -138,8 +138,8 @@ export default function Home() {
       // wait for the transaction to get mined
       await tx.wait();
       setLoading(false);
-      window.alert("Sucessfully minted Crypto Dev Tokens");
-      await getBalanceOfCryptoDevTokens();
+      window.alert("Sucessfully minted Digicoin Tokens");
+      await getBalanceOfDigicoinTokens();
       await getTotalTokensMinted();
       await getTokensToBeClaimed();
     } catch (err) {
@@ -148,9 +148,9 @@ export default function Home() {
   };
 
   /**
-   * claimCryptoDevTokens: Helps the user claim Crypto Dev Tokens
+   * claimDigicoinTokens: Helps the user claim Digicoin Tokens
    */
-  const claimCryptoDevTokens = async () => {
+  const claimDigicoinTokens = async () => {
     try {
       // We need a Signer here since this is a 'write' transaction.
       // Create an instance of tokenContract
@@ -166,8 +166,8 @@ export default function Home() {
       // wait for the transaction to get mined
       await tx.wait();
       setLoading(false);
-      window.alert("Sucessfully claimed Crypto Dev Tokens");
-      await getBalanceOfCryptoDevTokens();
+      window.alert("Sucessfully claimed Digicoin Tokens");
+      await getBalanceOfDigicoinTokens();
       await getTotalTokensMinted();
       await getTokensToBeClaimed();
     } catch (err) {
@@ -303,7 +303,7 @@ export default function Home() {
       });
       connectWallet();
       getTotalTokensMinted();
-      getBalanceOfCryptoDevTokens();
+      getBalanceOfDigicoinTokens();
       getTokensToBeClaimed();
       withdrawCoins();
     }
@@ -338,7 +338,7 @@ export default function Home() {
           <div className={styles.description}>
             {tokensToBeClaimed * 10} Tokens can be claimed!
           </div>
-          <button className={styles.button} onClick={claimCryptoDevTokens}>
+          <button className={styles.button} onClick={claimDigicoinTokens}>
             Claim Tokens
           </button>
         </div>
@@ -360,7 +360,7 @@ export default function Home() {
         <button
           className={styles.button}
           disabled={!(tokenAmount > 0)}
-          onClick={() => mintCryptoDevToken(tokenAmount)}
+          onClick={() => mintDigicoinToken(tokenAmount)}
         >
           Mint Tokens
         </button>
@@ -371,22 +371,21 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Crypto Devs</title>
+        <title>Digicoin</title>
         <meta name="description" content="ICO-Dapp" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
         <div>
-          <h1 className={styles.title}>Welcome to Crypto Devs ICO!</h1>
+          <h1 className={styles.title}>Welcome to Digicoin ICO!</h1>
           <div className={styles.description}>
-            You can claim or mint Crypto Dev tokens here
+            You can claim or mint Digicoin tokens here
           </div>
           {walletConnected ? (
             <div>
               <div className={styles.description}>
                 {/* Format Ether helps us in converting a BigNumber to string */}
-                You have minted {utils.formatEther(balanceOfCryptoDevTokens)} Crypto
-                Dev Tokens
+                You have minted {utils.formatEther(balanceOfDigicoinTokens)} Digicoin Tokens
               </div>
               <div className={styles.description}>
                 {/* Format Ether helps us in converting a BigNumber to string */}
@@ -406,7 +405,7 @@ export default function Home() {
       </div>
 
       <footer className={styles.footer}>
-        Made with &#10084; by Crypto Devs
+        Made with &#10084; by James M
       </footer>
     </div>
   );
